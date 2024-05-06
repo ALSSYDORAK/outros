@@ -1,0 +1,105 @@
+-- Exercicio 3
+SELECT Novela.Nome, COUNT(Capitulo.ID_Capitulo) AS Quantidade_de_Capitulos
+FROM Novela
+JOIN Capitulo ON Novela.ID_Novela = Capitulo.ID_Novela
+GROUP BY Novela.Nome;
+
+-- Exercicio 4
+SELECT COUNT(*) AS Atores_Femininos
+FROM Ator
+WHERE Sexo = 'F';
+
+-- Exercicio 5
+SELECT AVG(Personagem.Idade) AS Idade_Media
+FROM Personagem;
+
+-- Exercicio 6
+SELECT Ator.Nome
+FROM Ator
+JOIN Personagem ON Ator.ID_Ator = Personagem.ID_Ator
+WHERE YEAR(CURDATE()) - YEAR(Ator.Data_Nascimento) = Personagem.Idade;
+
+-- Exercicio 7
+SELECT MAX(Salario) AS Salario_Maximo, MIN(Salario) AS Salario_Minimo
+FROM Ator;
+
+-- Exercicio 8
+SELECT Novela.Nome, AVG(Ator.Salario) AS Media_Salarial
+FROM Ator
+JOIN Atuacao ON Ator.ID_Ator = Atuacao.ID_Ator
+JOIN Novela ON Atuacao.ID_Novela = Novela.ID_Novela
+GROUP BY Novela.Nome;
+
+-- Exercicio 9
+SELECT Ator.Nome, COUNT(Personagem.ID_Personagem) AS Quantidade_de_Personagens
+FROM Ator
+JOIN Personagem ON Ator.ID_Ator = Personagem.ID_Ator
+GROUP BY Ator.Nome;
+
+-- Exercicio 10
+SELECT Ator.Nome
+FROM Ator
+JOIN Atuacao ON Ator.ID_Ator = Atuacao.ID_Ator
+JOIN Personagem ON Atuacao.ID_Personagem = Personagem.ID_Personagem
+WHERE Personagem.Situacao_Financeira = 'Rico'
+GROUP BY Ator.Nome
+HAVING COUNT(DISTINCT Atuacao.ID_Novela) > 3;
+
+-- Exercicio 11
+SELECT Ator.Nome
+FROM Ator
+LEFT JOIN Personagem ON Ator.ID_Ator = Personagem.ID_Ator
+WHERE Personagem.ID_Personagem IS NULL;
+
+-- Exercicio 12
+SELECT Ator.Nome, COUNT(DISTINCT Atuacao.ID_Novela) AS Quantidade_de_Novelas
+FROM Ator
+JOIN Atuacao ON Ator.ID_Ator = Atuacao.ID_Ator
+GROUP BY Ator.Nome;
+
+-- Exercicio 13
+SELECT Ator.Nome, YEAR(CURDATE()) - YEAR(Ator.Data_Nascimento) AS Idade
+FROM Ator
+JOIN Atuacao ON Ator.ID_Ator = Atuacao.ID_Ator
+JOIN Novela ON Atuacao.ID_Novela = Novela.ID_Novela
+WHERE Novela.Nome = 'A Favorita';
+
+-- Exercicio 14
+SELECT DISTINCT Ator.Nome
+FROM Ator
+JOIN Atuacao ON Ator.ID_Ator = Atuacao.ID_Ator
+JOIN Novela ON Atuacao.ID_Novela = Novela.ID_Novela
+WHERE Novela.Horario = '18:00';
+
+-- Exercicio 15
+SELECT Ator.Nome
+FROM Ator
+LEFT JOIN Atuacao ON Ator.ID_Ator = Atuacao.ID_Ator
+WHERE Atuacao.ID_Atuacao IS NULL;
+
+-- Exercicio 16 (continuação)
+JOIN Atuacao AS Atuacao1 ON Ator1.ID_Ator = Atuacao1.ID_Ator
+JOIN Atuacao AS Atuacao2 ON Atuacao1.ID_Novela = Atuacao2.ID_Novela
+JOIN Ator AS Ator2 ON Atuacao2.ID_Ator = Ator2.ID_Ator
+WHERE Ator1.Nome = 'Bruna Marquezine' AND Ator2.Nome <> 'Bruna Marquezine';
+
+-- Exercicio 17
+SELECT Personagem.Nome, MIN(Personagem.Idade) AS Idade_Mais_Nova
+FROM Personagem;
+
+-- Exercicio 18
+SELECT Ator.Cidade, Ator.Estado, COUNT(*) AS Quantidade_de_Atores
+FROM Ator
+GROUP BY Ator.Cidade, Ator.Estado;
+
+-- Exercicio 19
+SELECT DISTINCT Ator.Nome
+FROM Ator
+JOIN Atuacao ON Ator.ID_Ator = Atuacao.ID_Ator
+JOIN Novela ON Atuacao.ID_Novela = Novela.ID_Novela
+WHERE Novela.Horario <= '19:00';
+
+-- Exercicio 20
+SELECT Ator.Nome, Ator.Salario
+FROM Ator
+WHERE Ator.Salario > (SELECT AVG(Salario) FROM Ator);
