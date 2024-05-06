@@ -1,0 +1,46 @@
+INSERT INTO Novela (ID_Novela, Nome, Horario) VALUES (1, 'Novela 1', '18:00');
+INSERT INTO Novela (ID_Novela, Nome, Horario) VALUES (2, 'Novela 2', '19:00');
+INSERT INTO Novela (ID_Novela, Nome, Horario) VALUES (3, 'Novela 3', '20:00');
+INSERT INTO Novela (ID_Novela, Nome, Horario) VALUES (4, 'Novela 4', '21:00');
+INSERT INTO Novela (ID_Novela, Nome, Horario) VALUES (5, 'Novela 5', '22:00');
+INSERT INTO Novela (ID_Novela, Nome, Horario) VALUES (6, 'Novela 6', '23:00');
+INSERT INTO Novela (ID_Novela, Nome, Horario) VALUES (7, 'Novela 7', '00:00');
+INSERT INTO Novela (ID_Novela, Nome, Horario) VALUES (8, 'Novela 8', '01:00');
+INSERT INTO Novela (ID_Novela, Nome, Horario) VALUES (9, 'Novela 9', '02:00');
+INSERT INTO Novela (ID_Novela, Nome, Horario) VALUES (10, 'Novela 10', '03:00');
+
+-- Inserções para a tabela Capitulo
+INSERT INTO Capitulo (ID_Capitulo, Numero, Data, ID_Novela) VALUES (1, 1, '2024-05-06', 1);
+INSERT INTO Capitulo (ID_Capitulo, Numero, Data, ID_Novela) VALUES (2, 2, '2024-05-07', 1);
+INSERT INTO Capitulo (ID_Capitulo, Numero, Data, ID_Novela) VALUES (3, 3, '2024-05-08', 1);
+INSERT INTO Capitulo (ID_Capitulo, Numero, Data, ID_Novela) VALUES (4, 4, '2024-05-09', 1);
+INSERT INTO Capitulo (ID_Capitulo, Numero, Data, ID_Novela) VALUES (5, 5, '2024-05-10', 1);
+INSERT INTO Capitulo (ID_Capitulo, Numero, Data, ID_Novela) VALUES (6, 1, '2024-05-06', 2);
+INSERT INTO Capitulo (ID_Capitulo, Numero, Data, ID_Novela) VALUES (7, 2, '2024-05-07', 2);
+INSERT INTO Capitulo (ID_Capitulo, Numero, Data, ID_Novela) VALUES (8, 3, '2024-05-08', 2);
+INSERT INTO Capitulo (ID_Capitulo, Numero, Data, ID_Novela) VALUES (9, 4, '2024-05-09', 2);
+INSERT INTO Capitulo (ID_Capitulo, Numero, Data, ID_Novela) VALUES (10, 5, '2024-05-10', 2);
+
+-- Inserções para a tabela Ator
+INSERT INTO Ator (ID_Ator, Nome, Sexo, Data_Nascimento, Salario, Cidade, Estado) VALUES (1, 'Ator 1', 'M', '1980-01-01', 5000, 'Curitiba', 'PR');
+INSERT INTO Ator (ID_Ator, Nome, Sexo, Data_Nascimento, Salario, Cidade, Estado) VALUES (2, 'Ator 2', 'F', '1981-02-02', 6000, 'São Paulo', 'SP');
+INSERT INTO Ator (ID_Ator, Nome, Sexo, Data_Nascimento, Salario, Cidade, Estado) VALUES (3, 'Ator 3', 'M', '1982-03-03', 7000, 'Rio de Janeiro', 'RJ');
+INSERT INTO Ator (ID_Ator, Nome, Sexo, Data_Nascimento, Salario, Cidade, Estado) VALUES (4, 'Ator 4', 'F', '1983-04-04', 8000, 'Belo Horizonte', 'MG');
+INSERT INTO Ator (ID_Ator, Nome, Sexo, Data_Nascimento, Salario, Cidade, Estado) VALUES (5, 'Ator 5', 'M', '1984-05-05', 9000, 'Porto Alegre', 'RS');
+INSERT INTO Ator (ID_Ator, Nome, Sexo, Data_Nascimento, Salario, Cidade, Estado) VALUES (6, 'Ator 6', 'F', '1985-06-06', 10000, 'Florianópolis', 'SC');
+INSERT INTO Ator (ID_Ator, Nome, Sexo, Data_Nascimento, Salario, Cidade, Estado) VALUES (7, 'Ator 7', 'M', '1986-07-07', 11000, 'Salvador', 'BA');
+INSERT INTO Ator (ID_Ator, Nome, Sexo, Data_Nascimento, Salario, Cidade, Estado) VALUES (8, 'Ator 8', 'F', '1987-08-08', 12000, 'Recife', 'PE');
+INSERT INTO Ator (ID_Ator, Nome, Sexo, Data_Nascimento, Salario, Cidade, Estado) VALUES (9, 'Ator 9', 'M', '1988-09-09', 13000, 'Fortaleza', 'CE');
+INSERT INTO Ator (ID_Ator, Nome, Sexo, Data_Nascimento, Salario, Cidade, Estado) VALUES (10, 'Ator 10', 'F', '1989-10-10', 14000, 'Manaus', 'AM');
+
+-- Inserções para a tabela Personagem
+INSERT INTO Personagem (ID_Personagem, Nome, Idade, Situacao_Financeira, ID_Ator) VALUES (1, 'Personagem 1', 40, 'Rico', 1);
+INSERT INTO Personagem (ID_Personagem, Nome, Idade, Situacao_Financeira, ID_Ator) VALUES (2, 'Personagem 2', 39, 'Pobre', 2);
+INSERT INTO Personagem (ID_Personagem, Nome, Idade, Situacao_Financeira, ID_Ator) VALUES (3, 'Personagem 3', 38, 'Rico', 3);
+INSERT INTO Personagem (ID_Personagem, Nome, Idade, Situacao_Financeira, ID_Ator) VALUES (4, 'Personagem 4', 37, 'Pobre', 4);
+INSERT INTO Personagem (ID_Personagem, Nome, Idade, Situacao_Financeira, ID_Ator) VALUES (5, 'Personagem 5', 36, 'Rico', 5);
+INSERT INTO Personagem (ID_Personagem, Nome, Idade, Situacao_Financeira, ID_Ator) VALUES (6, 'Personagem 6', 35, 'Pobre', 6);
+INSERT INTO Personagem (ID_Personagem, Nome, Idade, Situacao_Financeira, ID_Ator) VALUES (7, 'Personagem 7', 34, 'Rico', 7);
+INSERT INTO Personagem (ID_Personagem, Nome, Idade, Situacao_Financeira, ID_Ator) VALUES (8, 'Personagem 8', 33, 'Pobre', 8);
+INSERT INTO Personagem (ID_Personagem, Nome, Idade, Situacao_Financeira, ID_Ator) VALUES (9, 'Personagem 9', 32, 'Rico', 9);
+INSERT INTO Personagem (ID_Personagem, Nome, Idade, Situacao_Financeira, ID_Ator) VALUES (10, 'Personagem 10', 31, 'Pobre', 10);
