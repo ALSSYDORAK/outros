@@ -1,0 +1,51 @@
+/* Lógico_2: */
+
+CREATE TABLE novela (
+    idn int PRIMARY KEY,
+    nomen varchar(50),
+    horario int
+);
+
+CREATE TABLE capitulo (
+    idc int PRIMARY KEY,
+    numeroc int,
+    data date,
+    idn int,
+    fk_novela_idn int
+);
+
+CREATE TABLE ator (
+    ida int PRIMARY KEY,
+    nome varchar(50),
+    sexo varchar(1),
+    data_nascimento date,
+    salario int,
+    cidade varchar(50),
+    estado varchar(50)
+);
+
+CREATE TABLE personagem (
+    idp int PRIMARY KEY,
+    nome varchar(50),
+    idade int,
+    situacao_financeira int,
+    ida int,
+    idn int,
+    fk_novela_idn int,
+    fk_ator_ida int
+);
+ 
+ALTER TABLE capitulo ADD CONSTRAINT FK_capitulo_2
+    FOREIGN KEY (fk_novela_idn)
+    REFERENCES novela (idn)
+    ON DELETE RESTRICT;
+ 
+ALTER TABLE personagem ADD CONSTRAINT FK_personagem_2
+    FOREIGN KEY (fk_novela_idn)
+    REFERENCES novela (idn)
+    ON DELETE RESTRICT;
+ 
+ALTER TABLE personagem ADD CONSTRAINT FK_personagem_3
+    FOREIGN KEY (fk_ator_ida)
+    REFERENCES ator (ida)
+    ON DELETE RESTRICT;
