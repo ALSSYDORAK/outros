@@ -1,0 +1,97 @@
+-- EXERCÍCIOS
+
+
+--1) Conceder gratificação de 10% para os funcionários que fazem aniversário no mês corrente.
+
+--Variáveis globais
+DECLARE @nome VARCHAR(100), @mesAtual INT, @mes VARCHAR(20)
+-------------------------------------------------------
+--Variáveis locais
+DECLARE @datancto DATETIME, @salario NUMERIC(7,2), @status CHAR(1), @mesNascimento INT
+-------------------------------------------------------
+--Variáveis globais que serão passadas como parâmetro (STORED PROCEDURE)
+SET @nome = 'José da Solva'
+SET @mes = 'maio'
+-------------------------------------------------------
+--Verifica se o Funcionário existe no Banco de Dados
+IF (SELECT COUNT(*) FROM FUNCIONARIO WHERE NOME=@nome) = 0
+    PRINT 'Funcionário não cadastrado'
+ELSE
+BEGIN
+    --Atribui valores às variáveis
+    SELECT	@salario = salario, 
+            @status = status, 
+            @datancto = DataNcto 
+    FROM	funcionario WHERE nome = @nome
+
+    -- Obtém o mês de nascimento do funcionário
+    SET @mesNascimento = MONTH(@datancto)
+    
+    IF @status = 1
+    BEGIN
+        IF @mesNascimento = MONTH(GETDATE()) AND @mesNascimento = MONTH(CONVERT(DATE, GETDATE()))
+        BEGIN
+            PRINT 'Esse mês tem gratificação de aniversário'
+            -- Atualiza a coluna GRATIFICACAO para conceder um bônus de 10%
+            UPDATE FUNCIONARIO SET GRATIFICACAO = SALARIO * 0.1
+            WHERE NOME = @nome
+        END
+        ELSE
+        BEGIN
+            PRINT 'Sem gratificação'
+        END
+    END
+    ELSE
+    BEGIN
+        PRINT 'Sem gratificação - Afastado'
+    END
+END
+
+
+--2) Calcular desconto na folha salarial de 1,5% para os funcionários do departamento de RH para fundo de Aniversariante do Mês
+
+--Variáveis globais
+DECLARE @nome VARCHAR(100), @mes VARCHAR(20), @mesAtual INT, @salario NUMERIC(7,2), @status CHAR(1), @departamento VARCHAR(100), @datancto DATETIME, @mesNascimento INT
+
+--Variáveis globais que serão passadas como parâmetro (STORED PROCEDURE)
+SET @nome = 'José da Solva'
+SET @mes = 'maio'
+
+--Verifica se o Funcionário existe no Banco de Dados
+IF (SELECT COUNT(*) FROM FUNCIONARIO WHERE NOME = @nome) = 0
+    PRINT 'Funcionário não cadastrado'
+ELSE
+BEGIN
+    --Atribui valores às variáveis
+    SELECT	@salario = SALARIO, 
+            @status = STATUS, 
+            @departamento = DEPARTAMENTO,
+            @datancto = DataNcto 
+    FROM	FUNCIONARIO 
+    WHERE NOME = @nome
+
+    
+    SET @mesAtual = MONTH(GETDATE())
+
+ 
+    SET @mesNascimento = MONTH(@datancto)
+    
+    IF @status = 1
+    BEGIN
+        IF @departamento = 'RH' AND @mesNascimento != @mesAtual
+        BEGIN
+            PRINT 'Desconto de 1,5% aplicado para o fundo de Aniversariante do Mês'
+            UPDATE FUNCIONARIO 
+            SET SALARIO = SALARIO * 0.985 
+            WHERE NOME = @nome
+        END
+        ELSE
+        BEGIN
+            PRINT 'Sem desconto'
+        END
+    END
+    ELSE
+    BEGIN
+        PRINT 'Sem desconto - Afastado'
+    END
+END
