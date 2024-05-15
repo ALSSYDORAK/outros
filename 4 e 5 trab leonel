@@ -1,0 +1,38 @@
+<?php
+if (@$_POST['botao'] == "Gravar") {
+    $ano = $_POST['ano'];
+    $matricula = $_POST['fk_aluno_codigo'];
+    $turma = $_POST['turma'];
+    $cod_disciplina = $_POST['fk_disciplina_codigo'];
+    $nota1 = $_POST['nota1'];
+    $nota2 = $_POST['nota2'];
+
+    // Verificar se o aluno já cursou a disciplina no mesmo ano
+    $consulta_cursou = "SELECT * FROM cursa WHERE fk_aluno_codigo = '$matricula' AND fk_disciplina_codigo = '$cod_disciplina' AND ano = '$ano'";
+    $resultado_cursou = mysqli_query($mysqli, $consulta_cursou);
+    $ja_cursou = mysqli_num_rows($resultado_cursou);
+
+    // Verificar se o aluno já foi aprovado na disciplina
+    $consulta_aprovado = "SELECT * FROM cursa WHERE fk_aluno_codigo = '$matricula' AND fk_disciplina_codigo = '$cod_disciplina' AND (nota1 + nota2) >= 70";
+    $resultado_aprovado = mysqli_query($mysqli, $consulta_aprovado);
+    $ja_aprovado = mysqli_num_rows($resultado_aprovado);
+
+    // Verificar se a turma está lotada
+    $consulta_turma = "SELECT turma FROM cursa WHERE turma = '$turma'";
+    $resultado_turma = mysqli_query($mysqli, $consulta_turma);
+    $total_alunos = mysqli_num_rows($resultado_turma);
+
+    if ($ja_cursou > 0) {
+        echo "O aluno já cursou essa disciplina no mesmo ano.";
+    } elseif ($ja_aprovado > 0) {
+        echo "O aluno já foi aprovado nessa disciplina e não pode ser matriculado novamente.";
+    } elseif ($total_alunos > 30) {
+        echo "Turma lotada";
+    } else {
+        // Continuar com a inserção dos dados
+        $insere = "INSERT INTO cursa (ano, fk_aluno_codigo, turma, fk_disciplina_codigo, nota1, nota2) 
+                   VALUES ('$ano', '$matricula', '$turma', '$cod_disciplina', '$nota1', '$nota2')";
+        mysqli_query($mysqli, $insere) or die("Não foi possível inserir os dados");
+    }
+}
+?>
