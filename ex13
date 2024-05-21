@@ -1,0 +1,109 @@
+CREATE TABLE Departamento (
+    codigo INT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Empregado (
+    id INT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    salario DECIMAL(10, 2) NOT NULL,
+    codigo_departamento INT,
+    FOREIGN KEY (codigo_departamento) REFERENCES Departamento(codigo)
+);
+
+INSERT INTO Departamento (codigo, nome) VALUES (1, 'Departamento 1');
+INSERT INTO Departamento (codigo, nome) VALUES (2, 'Departamento 2');
+INSERT INTO Departamento (codigo, nome) VALUES (3, 'Departamento 3');
+INSERT INTO Departamento (codigo, nome) VALUES (4, 'Departamento 4');
+INSERT INTO Departamento (codigo, nome) VALUES (5, 'Departamento 5');
+
+-- Substitua 'EmpregadoX' pelo nome do empregado e 'SalarioX' pelo salário do empregado
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (1, 'Empregado1', 1900, 1);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (2, 'Empregado2', 2000, 2);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (3, 'Empregado3', 1800, 3);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (4, 'Empregado4', 1500, 4);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (5, 'Empregado5', 1800, 2);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (6, 'Empregado6', 1900, 3);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (7, 'Empregado7', 2000, 4);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (8, 'Empregado8', 1900, 2);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (9, 'Empregado9', 1800, 1);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (10, 'Empregado10', 1900, 2);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (11, 'Empregado11', 1600, 3);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (12, 'Empregado12', 1700, 4);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (13, 'Empregado13', 2000, 3);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (14, 'Empregado14', 2100, 4);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (15, 'Empregado15', 1900, 5);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (16, 'Empregado16', 1800, 4);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (17, 'Empregado17', 1700, 1);
+INSERT INTO Empregado (id, nome, salario, codigo_departamento) VALUES (18, 'Empregado18', 1700, 2);
+-- Repita o processo para os outros empregados
+
+--4
+SELECT E.nome AS NomeFuncionario, E.salario AS Salario, D.nome AS NomeDepartamento
+FROM Empregado E
+JOIN Departamento D ON E.codigo_departamento = D.codigo
+ORDER BY E.nome;
+
+--5
+SELECT D.nome AS NomeDepartamento, AVG(E.salario) AS MediaSalarial
+FROM Empregado E
+JOIN Departamento D ON E.codigo_departamento = D.codigo
+GROUP BY D.nome;
+
+--6
+SELECT D.nome AS NomeDepartamento, COUNT(E.id) AS QuantidadeEmpregados
+FROM Empregado E
+JOIN Departamento D ON E.codigo_departamento = D.codigo
+GROUP BY D.nome;
+
+--7
+SELECT E.nome AS NomeFuncionario, E.salario AS Salario
+FROM Empregado E
+WHERE E.salario > (SELECT AVG(salario) FROM Empregado);
+
+--8
+SELECT D.codigo AS CodigoDepartamento, D.nome AS NomeDepartamento
+FROM Departamento D
+LEFT JOIN Empregado E ON D.codigo = E.codigo_departamento
+WHERE E.id IS NULL;
+
+--9
+SELECT D.nome AS NomeDepartamento
+FROM Empregado E
+JOIN Departamento D ON E.codigo_departamento = D.codigo
+GROUP BY D.nome
+HAVING COUNT(E.id) > 3;
+
+--10
+SELECT E1.nome AS NomeFuncionario, E1.salario AS Salario
+FROM Empregado E1
+JOIN Empregado E2 ON E1.salario = E2.salario AND E1.codigo_departamento <> E2.codigo_departamento;
+
+--11
+
+-- Criação da tabela de backup para Empregado
+SELECT *
+INTO Empregado_Backup
+FROM Empregado;
+
+-- Criação da tabela Empregado_Departamento
+CREATE TABLE Empregado_Departamento (
+    id_empregado INT,
+    codigo_departamento INT,
+    PRIMARY KEY (id_empregado, codigo_departamento),
+    FOREIGN KEY (id_empregado) REFERENCES Empregado(id),
+    FOREIGN KEY (codigo_departamento) REFERENCES Departamento(codigo)
+);
+
+-- Transferência dos dados já cadastrados para a nova tabela
+INSERT INTO Empregado_Departamento (id_empregado, codigo_departamento)
+SELECT id, codigo_departamento FROM Empregado_Backup WHERE codigo_departamento IS NOT NULL;
+
+-- Remoção da coluna 'codigo_departamento' da tabela 'Empregado'
+ALTER TABLE Empregado
+DROP constraint FK__Empregado__codig__267ABA7A;
+	
+alter table empregado
+drop column codigo_departamento;
+
+
