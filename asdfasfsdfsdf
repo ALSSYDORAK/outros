@@ -1,0 +1,21 @@
+-- Criação da tabela de backup para Empregado
+SELECT *
+INTO Empregado_Backup
+FROM Empregado;
+
+-- Criação da tabela Empregado_Departamento
+CREATE TABLE Empregado_Departamento (
+    id_empregado INT,
+    codigo_departamento INT,
+    PRIMARY KEY (id_empregado, codigo_departamento),
+    FOREIGN KEY (id_empregado) REFERENCES Empregado(id),
+    FOREIGN KEY (codigo_departamento) REFERENCES Departamento(codigo)
+);
+
+-- Transferência dos dados já cadastrados para a nova tabela
+INSERT INTO Empregado_Departamento (id_empregado, codigo_departamento)
+SELECT id, codigo_departamento FROM Empregado_Backup WHERE codigo_departamento IS NOT NULL;
+
+-- Remoção da coluna 'codigo_departamento' da tabela 'Empregado'
+ALTER TABLE Empregado
+DROP COLUMN codigo_departamento;
