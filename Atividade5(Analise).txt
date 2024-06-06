@@ -1,0 +1,41 @@
+
+--1) NO EXCEL, PREVER O TOTAL DAS VENDAS DOS PRÓXIMOS 3 ANOS PARA A REGIÃO SUL, CONSIDERANDO OS ANOS DE 2021, 2022 e 2023
+SELECT YEAR(DataNF) AS ANO, UF.Regiao, SUM(ProdutoItem.Qtde_Venda * Produto.Preco * (1 - ProdutoItem.Desconto / 100)) AS Total_Vendas
+FROM UF
+INNER JOIN PRODUTO ON UF.CodUF = PRODUTO.CodProduto
+INNER JOIN ProdutoItem ON PRODUTO.CodProduto = ProdutoItem.CodProduto
+INNER JOIN NOTA_FISCAL ON NOTA_FISCAL.CodCliente = UF.CodUF
+WHERE UF.Regiao = 'Sul'
+GROUP BY UF.Regiao, DataNF
+
+
+--2) NO EXCEL, PREVER A MÉDIA DAS VENDAS DOS PRÓXIMOS 3 ANOS PARA A REGIÃO SUDESTE, CONSIDERANDO OS ANOS DE 2021, 2022, 2023 e 2024
+SELECT YEAR(DataNF) AS ANO, UF.Regiao, SUM(ProdutoItem.Qtde_Venda * Produto.Preco * (1 - ProdutoItem.Desconto / 100)) AS Total_Vendas
+FROM UF
+INNER JOIN PRODUTO ON UF.CodUF = PRODUTO.CodProduto
+INNER JOIN ProdutoItem ON PRODUTO.CodProduto = ProdutoItem.CodProduto
+INNER JOIN NOTA_FISCAL ON NOTA_FISCAL.CodCliente = UF.CodUF
+WHERE UF.Regiao = 'Sudeste'
+GROUP BY UF.Regiao, DataNF
+
+--3) NO EXCEL, PREVER O TOTAL DAS VENDAS DOS PRÓXIMOS 4 ANOS PARA OS PRODUTOS COM VALOR MAIOR QUE 5.000, CONSIDERANDO OS ANOS DE 2021, 2022 e 2023
+SELECT YEAR(DataNF) AS ANO, PRODUTO.NomProduto, SUM(ProdutoItem.Qtde_Venda * Produto.Preco * (1 - ProdutoItem.Desconto / 100)) AS Total_Vendas FROM PRODUTO
+INNER JOIN ProdutoItem ON ProdutoItem.CodProduto = PRODUTO.CodProduto
+INNER JOIN NOTA_FISCAL ON NOTA_FISCAL.CodCliente = PRODUTO.CodProduto
+WHERE Produto.Preco > 500
+GROUP BY NomProduto, DataNF
+
+--4) NO EXCEL, PREVER O TOTAL DAS COMPRAS DOS PRÓXIMOS 3 ANOS PARA A REGIÃO SUL, CONSIDERANDO OS ANOS DE 2021, 2022 e 2023
+SELECT UF.Regiao, SUM(Qtde_Compra)AS  TotalCompras FROM Fornecedor_Produto
+INNER JOIN ProdutoItem ON ProdutoItem.CodProduto = Fornecedor_Produto.CodProduto
+INNER JOIN UF ON UF.CodUF = ProdutoItem.CodProduto
+WHERE Regiao = 'Sul'
+GROUP BY Regiao
+
+--5) NO EXCEL, PREVER A MÉDIA DAS COMPRAS DOS PRÓXIMOS 4 ANOS PARA A REGIÃO SUDESTE, CONSIDERANDO OS ANOS DE 2021, 2022 e 2023
+SELECT UF.Regiao, AVG(Qtde_Compra) AS MediaCompras FROM UF
+INNER JOIN Fornecedor_Produto ON Fornecedor_Produto.CodFornecedor = UF.CodUF
+WHERE Regiao = 'Sudeste'
+GROUP BY Regiao
+
+--OBS.: ENTREGAR O ARQUIVO DO EXCEL 
