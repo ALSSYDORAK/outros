@@ -1,0 +1,70 @@
+quantidade compra sul, sudeste:
+
+SELECT 
+    YEAR(nf.DataNF) AS Ano,
+    SUM(fp.Qtde_Compra * fp.Preco) AS TotalCompras
+FROM 
+    Nota_Fiscal nf
+JOIN 
+    ProdutoItem pi ON nf.NumeroNF = pi.NumeroNF
+JOIN 
+    Produto p ON pi.CodProduto = p.CodProduto
+JOIN 
+    Fornecedor_Produto fp ON pi.CodProduto = fp.CodProduto
+JOIN 
+    Fornecedor f ON fp.CodFornecedor = f.CodFornecedor
+JOIN 
+    Municipio m ON f.CodMunicipio = m.CodMunicipio
+JOIN 
+    UF uf ON m.CodUF = uf.CodUF
+WHERE 
+    uf.Regiao = 'Sul'
+    AND YEAR(nf.DataNF) IN (2021, 2022, 2023)
+GROUP BY 
+    YEAR(nf.DataNF)
+ORDER BY 
+    Ano;
+
+quantidade venda sul, sudeste:
+SELECT 
+    YEAR(nf.DataNF) AS Ano,
+    SUM(pi.Qtde_Venda * (p.Preco - pi.Desconto)) AS TotalVendas
+FROM 
+    ProdutoItem pi
+JOIN 
+    Produto p ON pi.CodProduto = p.CodProduto
+JOIN 
+    Nota_Fiscal nf ON pi.NumeroNF = nf.NumeroNF
+JOIN 
+    Cliente c ON nf.CodCliente = c.CodCliente
+JOIN 
+    Municipio m ON c.CodMunicipio = m.CodMunicipio
+JOIN 
+    UF uf ON m.CodUF = uf.CodUF
+WHERE 
+    uf.Regiao = 'Sul'
+    AND YEAR(nf.DataNF) IN (2021, 2022, 2023)
+GROUP BY 
+    YEAR(nf.DataNF)
+ORDER BY 
+    Ano;
+
+
+produto acima de 500: 
+
+SELECT 
+    YEAR(nf.DataNF) AS Ano,
+    SUM(pi.Qtde_Venda * (p.Preco - pi.Desconto)) AS TotalVendas
+FROM 
+    ProdutoItem pi
+JOIN 
+    Produto p ON pi.CodProduto = p.CodProduto
+JOIN 
+    Nota_Fiscal nf ON pi.NumeroNF = nf.NumeroNF
+WHERE 
+    p.Preco > 500
+    AND YEAR(nf.DataNF) IN (2021, 2022, 2023)
+GROUP BY 
+    YEAR(nf.DataNF)
+ORDER BY 
+    Ano;
