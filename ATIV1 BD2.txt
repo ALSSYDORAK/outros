@@ -1,0 +1,257 @@
+EXERCÍCIO 1
+1-  -- Criação da tabela fornecedor
+CREATE TABLE fornecedor (
+   codigo_do_fornecedor INT IDENTITY (1,1) PRIMARY KEY,
+   nome_do_fornecedor VARCHAR(50),
+   endereco VARCHAR(50),
+   telefone VARCHAR(15),
+   email VARCHAR(50),
+   CNPJ VARCHAR(25)
+);
+
+
+
+-- Criação da tabela de associação fornecedor_produto
+CREATE TABLE fornecedor_produto (
+   codigo_do_fornecedor INT,
+   codigo_do_produto INT,
+   PRIMARY KEY (codigo_do_fornecedor, codigo_do_produto),
+   FOREIGN KEY (codigo_do_fornecedor) REFERENCES fornecedor(codigo_do_fornecedor),
+   FOREIGN KEY (codigo_do_produto) REFERENCES produto(codigo_do_produto)
+);
+
+-- Inserção de dados na tabela fornecedor
+INSERT INTO fornecedor (nome_do_fornecedor, endereco, telefone, email, CNPJ) VALUES
+('Fornecedor A', 'Av. Principal, 100', '(41) 1234-5678', 'contato@fornecedora.com', '00.000.000/0001-00'),
+('Fornecedor B', 'Rua Secundária, 200', '(41) 2345-6789', 'contato@fornecedorb.com', '11.111.111/0001-11'),
+('Fornecedor C', 'Rua Terceira, 300', '(41) 3456-7890', 'contato@fornecedorc.com', '22.222.222/0001-22');
+
+-- Inserção de dados na tabela fornecedor_produto
+INSERT INTO fornecedor_produto (codigo_do_fornecedor, codigo_do_produto) VALUES
+(1, 76), -- Fornecedor A fornece produto 1
+(1, 77), -- Fornecedor A fornece produto 2
+(2, 78), -- Fornecedor B fornece vinho
+(2, 79), -- Fornecedor B fornece produto 3
+(3, 80), -- Fornecedor C fornece produto 4
+(3, 81); -- Fornecedor C fornece produto 5
+
+CREATE DATABASE BD_Pedido;
+USE BD_Pedido;
+
+-- Criação da tabela cliente
+CREATE TABLE cliente (
+   codigo_do_cliente INT IDENTITY (1,1) PRIMARY KEY,
+   nome_do_cliente VARCHAR(20),
+   endereco VARCHAR(30),
+   cidade VARCHAR(20),
+   cep VARCHAR(12),
+   UF CHAR(2),
+   CNPJ VARCHAR(25)
+);
+
+-- Inserção de dados na tabela cliente
+INSERT INTO cliente (nome_do_cliente, endereco, cidade, cep, UF, CNPJ) VALUES
+('Cliente 1', 'Rua Teste', 'Curitiba', '80.000-000', 'PR', '111111'),
+('Cliente 2', 'Rua Teste 2', 'Curitiba', '82.000-010', 'PR', '222222'),
+('Cliente 3', 'Rua Teste 3', 'Curitiba', '83.000-030', 'PR', '333333'),
+('Cliente 4', 'Rua Teste 4', 'Curitiba', '84.000-040', 'PR', '444444'),
+('Cliente 5', 'Rua Teste 5', 'Curitiba', '85.000-050', 'PR', '555555'),
+('Cliente 6', 'Rua Teste 6', 'Curitiba', '86.000-060', 'PR', '666666');
+
+-- Criação da tabela vendedor
+CREATE TABLE vendedor (
+   codigo_do_vendedor INT PRIMARY KEY,
+   nome_do_vendedor VARCHAR(20),
+   faixa_de_comissao CHAR(1),
+   salario_fixo MONEY
+);
+
+-- Inserção de dados na tabela vendedor
+INSERT INTO vendedor (codigo_do_vendedor, nome_do_vendedor, faixa_de_comissao, salario_fixo) VALUES
+(1, 'Vendedor 1', 'A', 1800),
+(2, 'Vendedor 2', 'B', 2000),
+(3, 'Vendedor 3', 'B', 2400),
+(4, 'Vendedor 4', 'C', 2800),
+(5, 'Vendedor 5', 'C', 3800);
+
+-- Criação da tabela produto
+CREATE TABLE produto (
+   codigo_do_produto INT PRIMARY KEY,
+   descricao VARCHAR(20),
+   unidade VARCHAR(15),
+   val_unit MONEY
+);
+
+-- Inserção de dados na tabela produto
+INSERT INTO produto (codigo_do_produto, descricao, unidade, val_unit) VALUES
+(76, 'produto 1', 'metro', 68),
+(77, 'produto 2', 'cm', 20),
+(78, 'vinho', 'litro', 35),
+(79, 'produto 3', 'metro', 68),
+(80, 'produto 4', 'kg', 80),
+(81, 'produto 5', 'peça', 10);
+
+-- Criação da tabela pedido
+CREATE TABLE pedido (
+   numero_do_pedido INT PRIMARY KEY,
+   prazo_de_entrega INT, -- em dias
+   codigo_do_cliente INT,
+   codigo_do_vendedor INT,
+   FOREIGN KEY (codigo_do_cliente) REFERENCES cliente(codigo_do_cliente),
+   FOREIGN KEY (codigo_do_vendedor) REFERENCES vendedor(codigo_do_vendedor)
+);
+
+-- Inserção de dados na tabela pedido
+INSERT INTO pedido (numero_do_pedido, prazo_de_entrega, codigo_do_cliente, codigo_do_vendedor) VALUES
+(1, 1, 1, 1),
+(2, 2, 1, 2),
+(3, 3, 2, 2),
+(4, 4, 3, 4),
+(5, 5, 5, 5);
+
+-- Criação da tabela item_do_pedido
+CREATE TABLE item_do_pedido (
+   numero_do_pedido INT,
+   quantidade INT,
+   codigo_do_produto INT,
+   FOREIGN KEY (codigo_do_produto) REFERENCES produto(codigo_do_produto),
+   FOREIGN KEY (numero_do_pedido) REFERENCES pedido(numero_do_pedido),
+   PRIMARY KEY (numero_do_pedido, codigo_do_produto)
+);
+
+-- Inserção de dados na tabela item_do_pedido
+INSERT INTO item_do_pedido (numero_do_pedido, quantidade, codigo_do_produto) VALUES
+(1, 10, 76),
+(2, 10, 77),
+(3, 15, 78),
+(4, 16, 79),
+(5, 1, 77),
+(2, 10, 76),
+(1, 15, 78),
+(4, 16, 76),
+(3, 1, 79);
+
+
+
+2- -- Criação da tabela tipo_produto
+CREATE TABLE tipo_produto (
+   codigo_tipo_produto INT PRIMARY KEY,
+   descricao VARCHAR(30)
+);
+
+-- Adicionar a coluna codigo_tipo_produto na tabela produto
+ALTER TABLE produto
+ADD codigo_tipo_produto INT;
+
+-- Adicionar uma restrição de chave estrangeira para a nova coluna
+ALTER TABLE produto
+ADD CONSTRAINT fk_tipo_produto
+FOREIGN KEY (codigo_tipo_produto) REFERENCES tipo_produto(codigo_tipo_produto);
+
+-- Criação da tabela vendedor_tipo_produto
+CREATE TABLE vendedor_tipo_produto (
+   codigo_do_vendedor INT,
+   codigo_tipo_produto INT,
+   PRIMARY KEY (codigo_do_vendedor, codigo_tipo_produto),
+   FOREIGN KEY (codigo_do_vendedor) REFERENCES vendedor(codigo_do_vendedor),
+   FOREIGN KEY (codigo_tipo_produto) REFERENCES tipo_produto(codigo_tipo_produto)
+);
+
+-- Inserção de dados na tabela tipo_produto
+INSERT INTO tipo_produto (codigo_tipo_produto, descricao) VALUES
+(1, 'hortifruti'),
+(2, 'bebidas'),
+(3, 'cereais'),
+(4, 'roupas'),
+(5, 'acessórios');
+
+-- Atualização da tabela produto para definir tipos de produtos
+UPDATE produto
+SET codigo_tipo_produto = CASE
+    WHEN codigo_do_produto IN (76, 77) THEN 1  -- hortifruti
+    WHEN codigo_do_produto IN (78) THEN 2      -- bebidas
+    WHEN codigo_do_produto IN (79) THEN 3      -- cereais
+    WHEN codigo_do_produto IN (80) THEN 4      -- roupas
+    WHEN codigo_do_produto IN (81) THEN 5      -- acessórios
+    ELSE NULL
+END;
+
+-- Inserção de dados na tabela vendedor_tipo_produto
+INSERT INTO vendedor_tipo_produto (codigo_do_vendedor, codigo_tipo_produto) VALUES
+(1, 1), -- Vendedor 1 especializado em hortifruti
+(2, 2), -- Vendedor 2 especializado em bebidas
+(3, 3), -- Vendedor 3 especializado em cereais
+(4, 4), -- Vendedor 4 especializado em roupas
+(5, 5); -- Vendedor 5 especializado em acessórios
+
+-- Criação da tabela tipo_produto
+CREATE TABLE tipo_produto (
+   codigo_tipo_produto INT PRIMARY KEY,
+   descricao VARCHAR(30)
+);
+
+-- Adicionar a coluna codigo_tipo_produto na tabela produto
+ALTER TABLE produto
+ADD codigo_tipo_produto INT;
+
+-- Adicionar uma restrição de chave estrangeira para a nova coluna
+ALTER TABLE produto
+ADD CONSTRAINT fk_tipo_produto
+FOREIGN KEY (codigo_tipo_produto) REFERENCES tipo_produto(codigo_tipo_produto);
+
+-- Criação da tabela vendedor_tipo_produto
+CREATE TABLE vendedor_tipo_produto (
+   codigo_do_vendedor INT,
+   codigo_tipo_produto INT,
+   PRIMARY KEY (codigo_do_vendedor, codigo_tipo_produto),
+   FOREIGN KEY (codigo_do_vendedor) REFERENCES vendedor(codigo_do_vendedor),
+   FOREIGN KEY (codigo_tipo_produto) REFERENCES tipo_produto(codigo_tipo_produto)
+);
+
+
+
+
+
+
+EXERCÍCIO 2 
+
+1- -- Consulta para livros vendidos em pelo menos 5 unidades em mais de uma cidade
+SELECT l.titulo_livro, a.nome_autor
+FROM tb_livro l
+JOIN tb_livro_autor la ON l.isbn_livro = la.isbn_livro
+JOIN tb_autor a ON la.cod_autor = a.cod_autor
+JOIN tb_venda v ON l.isbn_livro = v.isbn_livro
+GROUP BY l.titulo_livro, a.nome_autor
+HAVING SUM(v.qnt_venda) >= 5
+AND COUNT(DISTINCT v.nome_cidade) > 1;
+
+2- -- Consulta para valores totais das vendas por ano em ordem crescente
+SELECT YEAR(data_venda) AS ano, SUM(qnt_venda * valor_livro) AS valor_total
+FROM tb_venda v
+JOIN tb_livro l ON v.isbn_livro = l.isbn_livro
+GROUP BY YEAR(data_venda)
+ORDER BY valor_total;
+
+3-- -- Consulta usando LEFT JOIN para encontrar cidades sem vendas
+SELECT c.nome_cidade, c.uf_cidade
+FROM tb_cidade c
+LEFT JOIN tb_venda v ON c.nome_cidade = v.nome_cidade AND c.uf_cidade = v.uf_cidade
+WHERE v.cod_venda IS NULL;
+
+4- -- Consulta usando NOT EXISTS para encontrar cidades sem vendas
+SELECT c.nome_cidade, c.uf_cidade
+FROM tb_cidade c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM tb_venda v
+    WHERE c.nome_cidade = v.nome_cidade
+    AND c.uf_cidade = v.uf_cidade
+);
+ 
+-- Consulta usando LEFT JOIN para encontrar cidades sem vendas
+SELECT c.nome_cidade, c.uf_cidade
+FROM tb_cidade c
+LEFT JOIN tb_venda v ON c.nome_cidade = v.nome_cidade AND c.uf_cidade = v.uf_cidade
+WHERE v.cod_venda IS NULL;
+
+
