@@ -1,0 +1,95 @@
+2) CREATE DATABASE BD_Pedido2;
+USE BD_Pedido2;
+
+--inserção da tabela tipo_produto
+CREATE TABLE tipo_produto (
+    cod_tipo INT PRIMARY KEY,
+    nome VARCHAR(20)
+);
+
+INSERT INTO tipo_produto VALUES (1, 'hortifruti');
+INSERT INTO tipo_produto VALUES (2, 'bebidas');
+INSERT INTO tipo_produto VALUES (3, 'cereais');
+INSERT INTO tipo_produto VALUES (4, 'roupas');
+INSERT INTO tipo_produto VALUES (5, 'acessorios');
+
+CREATE TABLE cliente (
+   codigo_do_cliente INT IDENTITY(1,1) PRIMARY KEY,
+   nome_do_cliente VARCHAR(20),
+   endereco VARCHAR(30),
+   cidade VARCHAR(20),
+   cep VARCHAR(12),
+   UF CHAR(2),
+   CNPJ VARCHAR(25)
+);
+
+INSERT INTO cliente VALUES('Cliente 1', 'Rua Teste', 'Curitiba', '80.000-000', 'PR', '111111');
+INSERT INTO cliente VALUES('Cliente 2', 'Rua Teste 2', 'Curitiba', '82.000-010', 'PR', '222222');
+INSERT INTO cliente VALUES('Cliente 3', 'Rua Teste 3', 'Curitiba', '83.000-030', 'PR', '333333');
+INSERT INTO cliente VALUES('Cliente 4', 'Rua Teste 4', 'Curitiba', '84.000-040', 'PR', '444444');
+INSERT INTO cliente VALUES('Cliente 5', 'Rua Teste 5', 'Curitiba', '85.000-050', 'PR', '555555');
+INSERT INTO cliente VALUES('Cliente 6', 'Rua Teste 6', 'Curitiba', '86.000-060', 'PR', '666666');
+
+-- juntando a tabela vendedor com o codigo do tipo_produto
+CREATE TABLE vendedor (
+   codigo_do_vendedor INT PRIMARY KEY,
+   nome_do_vendedor VARCHAR(20),
+   faixa_de_comissao CHAR(1),
+   salario_fixo MONEY,
+   cod_tipo INT,
+   FOREIGN KEY (cod_tipo) REFERENCES tipo_produto(cod_tipo)
+);
+
+INSERT INTO vendedor VALUES (1, 'Vendedor 1', 'A', 1800, 1);
+INSERT INTO vendedor VALUES (2, 'Vendedor 2', 'B', 2000, 2);
+INSERT INTO vendedor VALUES (3, 'Vendedor 3', 'B', 2400, 3);
+INSERT INTO vendedor VALUES (4, 'Vendedor 4', 'C', 2800, 4);
+INSERT INTO vendedor VALUES (5, 'Vendedor 5', 'C', 3800, 5);
+
+CREATE TABLE produto (
+   codigo_do_produto INT PRIMARY KEY,
+   descricao VARCHAR(20),
+   unidade VARCHAR(15),
+   val_unit MONEY
+);
+
+INSERT INTO produto VALUES (76, 'produto 1', 'metro', 68);
+INSERT INTO produto VALUES (77, 'produto 2', 'cm', 20);
+INSERT INTO produto VALUES (78, 'vinho', 'litro', 35);
+INSERT INTO produto VALUES (79, 'produto 3', 'metro', 68);
+INSERT INTO produto VALUES (80, 'produto 4', 'kg', 80);
+INSERT INTO produto VALUES (81, 'produto 5', 'peça', 10);
+
+CREATE TABLE pedido (
+   numero_do_pedido INT PRIMARY KEY,
+   prazo_de_entrega INT, -- em dias
+   codigo_do_cliente INT,
+   codigo_do_vendedor INT,
+   FOREIGN KEY (codigo_do_cliente) REFERENCES cliente(codigo_do_cliente),
+   FOREIGN KEY (codigo_do_vendedor) REFERENCES vendedor(codigo_do_vendedor)
+);
+
+INSERT INTO pedido VALUES (1, 1, 1, 1);
+INSERT INTO pedido VALUES (2, 2, 1, 2);
+INSERT INTO pedido VALUES (3, 3, 2, 2);
+INSERT INTO pedido VALUES (4, 4, 3, 4);
+INSERT INTO pedido VALUES (5, 5, 5, 5);
+
+CREATE TABLE item_do_pedido (
+   numero_do_pedido INT,
+   quantidade INT,
+   codigo_do_produto INT,
+   FOREIGN KEY (numero_do_pedido) REFERENCES pedido(numero_do_pedido),
+   FOREIGN KEY (codigo_do_produto) REFERENCES produto(codigo_do_produto),
+   PRIMARY KEY (numero_do_pedido, codigo_do_produto)
+);
+
+INSERT INTO item_do_pedido VALUES (1, 10, 76);
+INSERT INTO item_do_pedido VALUES (2, 10, 77);
+INSERT INTO item_do_pedido VALUES (3, 15, 78);
+INSERT INTO item_do_pedido VALUES (4, 16, 79);
+INSERT INTO item_do_pedido VALUES (5, 1, 77);
+INSERT INTO item_do_pedido VALUES (2, 10, 76);
+INSERT INTO item_do_pedido VALUES (1, 15, 78);
+INSERT INTO item_do_pedido VALUES (4, 16, 76);
+INSERT INTO item_do_pedido VALUES (3, 1, 79);
