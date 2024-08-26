@@ -1,0 +1,140 @@
+-- 1
+SELECT name
+FROM sys.key_constraints
+WHERE parent_object_id = OBJECT_ID('cliente')
+  AND type = 'PK';
+
+EXEC sp_rename 'PK__cliente__10B89027EF0021EC', 'PK_Cliente', 'OBJECT';
+
+--2
+ALTER TABLE cliente
+ADD Sexo CHAR(1) 
+    CONSTRAINT CHK_Sexo CHECK (Sexo IN ('M', 'm', 'F', 'f'));
+
+
+--3
+ALTER TABLE cliente
+ADD CONSTRAINT DF_UF
+DEFAULT 'PR' FOR UF;
+
+--4
+
+ALTER TABLE cliente
+ALTER COLUMN nome_do_cliente VARCHAR(20) NOT NULL;
+
+
+ALTER TABLE vendedor
+ALTER COLUMN nome_do_vendedor VARCHAR(20) NOT NULL;
+
+
+ALTER TABLE produto
+ALTER COLUMN descricao VARCHAR(20) NOT NULL;
+
+
+ALTER TABLE pedido
+ALTER COLUMN prazo_de_entrega INT NOT NULL;
+
+
+ALTER TABLE item_do_pedido
+ALTER COLUMN quantidade INT NOT NULL;
+
+--5
+SELECT fk.name AS FK_Name
+FROM sys.foreign_keys AS fk
+JOIN sys.tables AS t ON fk.parent_object_id = t.object_id
+WHERE t.name = 'item_do_pedido';
+
+ALTER TABLE item_do_pedido
+DROP CONSTRAINT FK_item_do_pedido_pedido;
+
+
+ALTER TABLE item_do_pedido
+ADD CONSTRAINT FK_item_do_pedido_pedido
+FOREIGN KEY (numero_do_pedido) REFERENCES pedido(numero_do_pedido)
+ON DELETE CASCADE;
+
+
+INSERT INTO pedido (numero_do_pedido, prazo_de_entrega, codigo_do_cliente, codigo_do_vendedor)
+VALUES (10, 7, 1, 1);
+
+INSERT INTO item_do_pedido (numero_do_pedido, quantidade, codigo_do_produto)
+VALUES (10, 5, 76), (10, 3, 77);
+
+--6
+-- Criação da stored procedure no SQL Server
+CREATE PROCEDURE sp_inserir_cliente
+    @p_nome_do_cliente VARCHAR(20),
+    @p_endereco VARCHAR(30),
+    @p_cidade VARCHAR(20),
+    @p_cep VARCHAR(12),
+    @p_UF CHAR(2),
+    @p_CNPJ VARCHAR(25)
+AS
+BEGIN
+    -- Inserção na tabela cliente
+    INSERT INTO cliente (nome_do_cliente, endereco, cidade, cep, UF, CNPJ)
+    VALUES (@p_nome_do_cliente, @p_endereco, @p_cidade, @p_cep, @p_UF, @p_CNPJ);
+END;
+
+--7
+IF OBJECT_ID('sp_inserir_cliente', 'P') IS NOT NULL
+BEGIN
+    DROP PROCEDURE sp_inserir_cliente;
+END
+GO
+
+CREATE PROCEDURE sp_inserir_cliente
+    @p_nome_do_cliente VARCHAR(20),
+    @p_endereco VARCHAR(30),
+    @p_cidade VARCHAR(20),
+    @p_cep VARCHAR(12),
+    @p_UF CHAR(2),
+    @p_CNPJ VARCHAR(25),
+    @status INT OUTPUT
+AS
+BEGIN
+
+    SET @status = 0;
+    
+
+    IF EXISTS (SELECT 1 FROM cliente WHERE nome_do_cliente = @p_nome_do_cliente)
+    BEGIN
+     
+        SET @status = 9;
+    END
+    ELSE
+    BEGIN
+  
+        INSERT INTO cliente (nome_do_cliente, endereco, cidade, cep, UF, CNPJ)
+        VALUES (@p_nome_do_cliente, @p_endereco, @p_cidade, @p_cep, @p_UF, @p_CNPJ);
+    END
+END;
+
+-- Alterar a stored procedure existente
+ALTER PROCEDURE sp_inserir_cliente
+    @p_nome_do_cliente VARCHAR(20),
+    @p_endereco VARCHAR(30),
+    @p_cidade VARCHAR(20),
+    @p_cep VARCHAR(12),
+    @p_UF CHAR(2),
+    @p_CNPJ VARCHAR(25),
+    @status INT OUTPUT
+AS
+BEGIN
+  
+    SET @status = 0;
+    
+
+    IF EXISTS (SELECT 1 FROM cliente WHERE nome_do_cliente = @p_nome_do_cliente)
+    BEGIN
+
+        SET @status = 9;
+    END
+    ELSE
+    BEGIN
+
+        INSERT INTO cliente (nome_do_cliente, endereco, cidade, cep, UF, CNPJ)
+        VALUES (@p_nome_do_cliente, @p_endereco, @p_cidade, @p_cep, @p_UF, @p_CNPJ);
+    END
+END;
+
