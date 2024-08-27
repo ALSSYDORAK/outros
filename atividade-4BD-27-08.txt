@@ -1,0 +1,289 @@
+--a
+CREATE FUNCTION CompletaZeros (@texto VARCHAR(MAX), @total INT)
+RETURNS VARCHAR(MAX)
+AS
+BEGIN
+    DECLARE @zeros VARCHAR(MAX);
+    SET @zeros = REPLICATE('0', @total);
+    
+    RETURN RIGHT(@zeros + @texto, @total);
+END;
+
+--b
+INSERT INTO TB_Empregado (RG_Empregado, Nome_Empregado, CPF_Empregado, RG_Supervisor, Salario_Empregado, Depto_Empregado)
+VALUES (
+    '78901234',  -- RG_Empregado
+    'Ana Costa',  -- Nome_Empregado
+    dbo.CompletaZeros('123456789', 11),
+    '34567891',  
+    '2800.00',  
+    1  
+);
+
+SELECT * FROM TB_Empregado WHERE RG_Empregado = '78901234';
+
+--c
+
+CREATE TRIGGER trg_ValidaDependente
+ON TB_Dependente
+INSTEAD OF INSERT
+AS
+BEGIN
+    
+    DECLARE @currentYear INT = DATEPART(YEAR, GETDATE());
+    
+  
+    INSERT INTO TB_Dependente (RG_Responsavel, Nome_dependente, Data_Nascimento, Relacao, Sexo)
+    SELECT i.RG_Responsavel, i.Nome_dependente, i.Data_Nascimento, i.Relacao, i.Sexo
+    FROM inserted i
+    WHERE NOT (
+        
+        (@currentYear - DATEPART(YEAR, i.Data_Nascimento)) > 
+            (CASE 
+                WHEN i.Sexo = 'M' THEN 18
+                WHEN i.Sexo = 'F' THEN 21
+                ELSE 0
+            END)
+        
+        AND (
+            (i.Sexo = 'M' AND (@currentYear - DATEPART(YEAR, i.Data_Nascimento)) > 18)
+            OR (i.Sexo = 'F' AND (@currentYear - DATEPART(YEAR, i.Data_Nascimento)) > 21)
+        )
+    );
+
+  
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        WHERE (
+            
+            (@currentYear - DATEPART(YEAR, i.Data_Nascimento)) > 
+                (CASE 
+                    WHEN i.Sexo = 'M' THEN 18
+                    WHEN i.Sexo = 'F' THEN 21
+                    ELSE 0
+                END)
+           
+            AND (
+                (i.Sexo = 'M' AND (@currentYear - DATEPART(YEAR, i.Data_Nascimento)) > 18)
+                OR (i.Sexo = 'F' AND (@currentYear - DATEPART(YEAR, i.Data_Nascimento)) > 21)
+            )
+        )
+    )
+    BEGIN
+       
+        RAISERROR ('Não é permitido inserir dependentes com a idade e sexo especificados.', 16, 1);
+    END
+END;
+
+-- teste 1
+-- dependente masculino com mais de 18 anos
+INSERT INTO TB_Dependente (RG_Responsavel, Nome_dependente, Data_Nascimento, Relacao, Sexo)
+VALUES ('12345678', 'João Silva', '2004-05-15', 'Filho', 'M');  -- Deve gerar erro
+
+--teste 2
+-- dependente masculino com 18 anos ou menos
+INSERT INTO TB_Dependente (RG_Responsavel, Nome_dependente, Data_Nascimento, Relacao, Sexo)
+VALUES ('12345678', 'Lucas Silva', '2006-09-10', 'Filho', 'M');  -- Deve ser inserido 
+
+--d
+CREATE TRIGGER trg_ValidaSupervisor
+ON TB_Empregado
+INSTEAD OF INSERT, UPDATE
+AS
+BEGIN
+    
+    
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        LEFT JOIN TB_Empregado e ON i.RG_Supervisor = e.RG_Empregado
+        WHERE i.RG_Empregado = i.RG_Supervisor
+        OR e.RG_Empregado IS NULL
+    )
+    BEGIN
+        
+        RAISERROR (
+            'Não é permitido que um empregado seja seu próprio supervisor ou que o supervisor não exista.',
+            16, 1
+        );
+        ROLLBACK TRANSACTION;
+    END
+    ELSE
+    BEGIN
+        
+        INSERT INTO TB_Empregado (RG_Empregado, Nome_Empregado, CPF_Empregado, RG_Supervisor, Salario_Empregado, Depto_Empregado)
+        SELECT RG_Empregado, Nome_Empregado, CPF_Empregado, RG_Supervisor, Salario_Empregado, Depto_Empregado
+        FROM inserted;
+    END
+END;
+
+--teste1
+--tentativa de inserir um empregado com ele mesmo como supervisor
+INSERT INTO TB_Empregado (RG_Empregado, Nome_Empregado, CPF_Empregado, RG_Supervisor, Salario_Empregado, Depto_Empregado)
+VALUES ('12345678', 'João Silva', '11111111111', '12345678', '3000.00', 2);  -- Deve gerar erro
+
+--teste2
+--tentativa de inserir um empregado com um supervisor válido
+INSERT INTO TB_Empregado (RG_Empregado, Nome_Empregado, CPF_Empregado, RG_Supervisor, Salario_Empregado, Depto_Empregado)
+VALUES ('34567890', 'Lucas Silva', '33333333333', '12345678', '2800.00', 2);  -- Deve ser inserido
+
+
+--e
+
+ALTER TABLE TB_Projeto
+ADD hora_total INT;
+
+CREATE TRIGGER trg_ValidaHorasProjeto
+ON TB_Projeto
+INSTEAD OF INSERT
+AS
+BEGIN
+    
+    DECLARE @cidade NVARCHAR(40);
+    DECLARE @horas_totais INT;
+
+    
+    DECLARE projeto_cursor CURSOR FOR
+    SELECT Cidade_Projeto, hora_total
+    FROM inserted;
+
+    OPEN projeto_cursor;
+    FETCH NEXT FROM projeto_cursor INTO @cidade, @horas_totais;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+       
+        IF EXISTS (
+            SELECT 1
+            FROM TB_Projeto
+            WHERE Cidade_Projeto = @cidade
+            GROUP BY Cidade_Projeto
+            HAVING SUM(hora_total) + @horas_totais > 2000
+        )
+        BEGIN
+            
+            RAISERROR ('Não é permitido inserir projetos com mais de 2.000 horas no total para a mesma cidade.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        FETCH NEXT FROM projeto_cursor INTO @cidade, @horas_totais;
+    END
+
+    CLOSE projeto_cursor;
+    DEALLOCATE projeto_cursor;
+
+    
+    INSERT INTO TB_Projeto (Numero_Projeto, Nome_Projeto, Cidade_Projeto, hora_total)
+    SELECT Numero_Projeto, Nome_Projeto, Cidade_Projeto, hora_total
+    FROM inserted;
+END;
+
+
+-- Insere um projeto com uma quantidade de horas que excede o limite para a mesma cidade
+INSERT INTO TB_Projeto (Numero_Projeto, Nome_Projeto, Cidade_Projeto, hora_total)
+VALUES (1708, 'Projeto Excedente', 'Curitiba', 2100);  -- Deve gerar erro se a soma das horas em Curitiba exceder 2.000 horas
+
+-- Insere um projeto com uma quantidade de horas que não excede o limite para a mesma cidade
+INSERT INTO TB_Projeto (Numero_Projeto, Nome_Projeto, Cidade_Projeto, hora_total)
+VALUES (1709, 'Projeto Aprovado', 'Pinhais', 500);  -- Deve ser inserido com sucesso
+
+
+--f
+
+CREATE PROCEDURE sp_ContarProjetosPorEmpregado
+AS
+BEGIN
+    
+    SELECT 
+        E.RG_Empregado,
+        E.Nome_Empregado,
+        COUNT(EP.Numero_Projeto) AS Total_Projetos
+    FROM 
+        TB_Empregado E
+    LEFT JOIN 
+        TB_Empregado_Projeto EP ON E.RG_Empregado = EP.RG_Empregado
+    GROUP BY 
+        E.RG_Empregado,
+        E.Nome_Empregado
+    ORDER BY 
+        E.RG_Empregado;
+END;
+
+EXEC sp_ContarProjetosPorEmpregado;
+
+--g
+
+CREATE TRIGGER trg_ValidaSupervisor
+ON TB_Empregado
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    
+    IF EXISTS (SELECT 1 FROM inserted WHERE RG_Supervisor IS NOT NULL)
+    BEGIN
+        
+        IF EXISTS (
+            SELECT 1
+            FROM inserted i
+            WHERE i.RG_Supervisor = i.RG_Empregado
+        )
+        BEGIN
+            
+            RAISERROR ('Não é permitido que um empregado seja seu próprio supervisor.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        
+        IF EXISTS (
+            SELECT 1
+            FROM inserted i
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM TB_Empregado e
+                WHERE e.RG_Empregado = i.RG_Supervisor
+            )
+        )
+        BEGIN
+            
+            RAISERROR ('O RG do supervisor especificado não existe.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+    END
+END;
+
+--teste 1
+INSERT INTO TB_Empregado (RG_Empregado, Nome_Empregado, CPF_Empregado, RG_Supervisor, Salario_Empregado, Depto_Empregado)
+VALUES ('99999999', 'João da Silva', '88888888888', '99999999', '5000.00', 1);  -- RG_Supervisor é igual ao RG_Empregado
+
+--teste 2
+-- Supondo que o RG '11111111' não existe na tabela TB_Empregado
+INSERT INTO TB_Empregado (RG_Empregado, Nome_Empregado, CPF_Empregado, RG_Supervisor, Salario_Empregado, Depto_Empregado)
+VALUES ('88888888', 'Maria Oliveira', '77777777777', '11111111', '4000.00', 2);  -- RG_Supervisor não existe
+
+--teste 3
+-- Atualizar um empregado com um supervisor válido
+UPDATE TB_Empregado
+SET RG_Supervisor = '45678912'
+WHERE RG_Empregado = '12345678';
+
+
+--h
+CREATE TRIGGER trg_AjustaSalarioPorProjeto
+ON TB_Empregado_Projeto
+AFTER INSERT
+AS
+BEGIN
+   
+    UPDATE TB_Empregado
+    SET Salario_Empregado = Salario_Empregado + 50
+    FROM TB_Empregado e
+    INNER JOIN inserted i ON e.RG_Empregado = i.RG_Empregado;
+END;
+
+
+
+
