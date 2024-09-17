@@ -1,0 +1,84 @@
+Proprietário
+Cadastrar Garçom:
+
+Acessa o sistema.
+Insere informações do garçom (nome, identidade, matrícula, endereço, telefone).
+Salva o cadastro.
+Cadastrar Gerente:
+
+Acessa o sistema.
+Insere informações do gerente (nome, endereço, telefone, CPF).
+Salva o cadastro.
+Atualizar Percentual de Comissão:
+
+Acessa o sistema.
+Ajusta o percentual de comissão.
+Salva as alterações.
+Gerar Relatório de Ocupação Semanal (Opcional):
+
+Solicita ao sistema a geração do relatório.
+Revê o relatório gerado.
+Gerente
+Cadastrar Garçom:
+
+Acessa o sistema.
+Insere informações do garçom (nome, identidade, matrícula, endereço, telefone).
+Salva o cadastro.
+(Nota: Em alguns sistemas, o gerente pode não ter essa função se o proprietário a realizar.)
+Atualizar Percentual de Comissão:
+
+Acessa o sistema.
+Ajusta o percentual de comissão.
+Salva as alterações.
+Gerar Relatório de Ocupação Semanal:
+
+Acessa o sistema.
+Solicita a geração do relatório de ocupação semanal.
+Revê o relatório gerado.
+Verificar Comissões dos Garçons:
+
+Acessa o sistema.
+Consulta as comissões calculadas.
+Revê e aprova os relatórios de comissão.
+Caixa
+Abrir Conta:
+
+Acessa o sistema.
+Insere informações da conta (mesa, garçom responsável, data, horário de abertura).
+Salva a abertura da conta.
+Fechar Conta (Em alguns sistemas, pode ser o garçom):
+
+Acessa o sistema.
+Registra a data e horário de fechamento.
+Confirma o valor total.
+Emissão da nota fiscal (ou solicitação para o sistema emitir).
+Garçom
+Adicionar Item à Conta:
+
+Utiliza o smartphone ou dispositivo.
+Solicita produtos do cardápio e suas quantidades.
+Associa os itens à conta do cliente.
+Atualiza o total da conta.
+Cancelar Conta:
+
+Recebe a solicitação do cliente.
+Verifica se a conta não possui itens.
+Cancela a conta e notifica o gerente.
+Fechar Conta:
+
+Solicita ao sistema o fechamento da conta.
+Registra a data e horário de fechamento.
+Solicita a emissão da nota fiscal.
+Entrega a nota fiscal ao cliente.
+Cliente
+Solicitar Abertura de Conta:
+
+Solicita ao garçom a abertura de uma nova conta.
+Solicitar Cancelamento de Conta:
+
+Solicita ao garçom o cancelamento da conta, se ainda não houver itens.
+Solicitar Fechamento de Conta:
+
+Solicita ao garçom o fechamento da conta.
+Recebe a nota fiscal do garçom.
+Essas atividades fornecem uma visão clara das ações realizadas por cada ator, essenciais para montar os diagramas de caso de uso e de sequência.
